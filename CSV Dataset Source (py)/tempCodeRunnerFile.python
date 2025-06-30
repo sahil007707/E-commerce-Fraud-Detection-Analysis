@@ -1,0 +1,38 @@
+import pandas as pd
+import numpy as np
+from faker import Faker
+from datetime import datetime, timedelta
+
+# Initialize Faker for realistic fake data
+fake = Faker()
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Generate 5000 rows of synthetic data
+data = {
+    "customer_id": [f"CUST_{np.random.randint(1000, 9999)}" for _ in range(5000)],
+    "age": np.random.randint(18, 80, 5000),
+    "gender": np.random.choice(["Male", "Female", "Other"], 5000, p=[0.45, 0.45, 0.1]),
+    "country": np.random.choice(["USA", "India", "Germany", "UK", "Japan", "Brazil", "Canada", "Australia", "France", "China"], 5000),
+    "avg_order_value": np.round(np.random.gamma(shape=2, scale=50, size=5000) + 10, 2),
+    "total_orders": np.random.poisson(lam=10, size=5000),
+    "last_purchase": np.random.randint(0, 365, 5000),
+    "is_fraudulent": np.random.choice([0, 1], 5000, p=[0.97, 0.03]),
+    "preferred_category": np.random.choice(["Electronics", "Fashion", "Home", "Beauty", "Sports"], 5000),
+    "email_open_rate": np.round(np.random.uniform(0, 100, 5000), 1),
+    "customer_since": [fake.date_between(start_date='-5y', end_date='today') for _ in range(5000)],
+    "loyalty_score": np.random.randint(1, 100, 5000),
+    "churn_risk": np.round(np.random.beta(a=2, b=5, size=5000), 2)
+}
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# Inject missing values (5% random NA)
+for col in ["email_open_rate", "avg_order_value"]:
+    df.loc[df.sample(frac=0.05).index, col] = np.nan
+
+# Save to CSV
+df.to_csv("synthetic_ecommerce_datahihello.csv", index=False)
+print("CSV file generated successfully!")
